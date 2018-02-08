@@ -1,6 +1,6 @@
 class PostsController < ApplicationController
 
-  #before_filter :authenticate_user!
+  before_filter :authenticate_user!, :except => :index
 
   def new
   	@post = Post.new
@@ -16,7 +16,8 @@ class PostsController < ApplicationController
 
   def create
 
-  	@post = Post.new(permit_post)
+    @user = current_user
+    @post = @user.posts.create(permit_post)
 
   	if @post.save
   		flash[:success] = "Success!"
@@ -29,6 +30,6 @@ class PostsController < ApplicationController
 
   private
   	def permit_post
-  		params.require(:post).permit(:image, :description)
+  		params.require(:post).permit(:image, :description, :user_id)
   	end
 end
